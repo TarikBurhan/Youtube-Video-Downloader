@@ -1,19 +1,17 @@
 import tkinter
 import customtkinter
-from pytube import YouTube
+from pytube import YouTube, Stream
 from threading import Thread
 import string
 from PIL import Image
 from io import BytesIO
 import base64
-from time import sleep
 
 customtkinter.set_appearance_mode("System")
-customtkinter.set_default_color_theme("dark-blue")
+customtkinter.set_default_color_theme("blue")
 
-global language
 
-language = "tr"
+
 
 class Ejderyatube:
     english = {"app_title": "Pytube Video Download" ,"title": "Enter Youtube link", 
@@ -22,8 +20,7 @@ class Ejderyatube:
                "author": """Pytube Video Downloader Test by TarikBurhan.\n Application might freeze while downloading.""",
                "res_sel": "Resolution Select", "resltns": "Resolutions", "sttngs": "Settings",
                "sel_ur_res": "Select Your Resolution", "select": "Select", "hghst_res": "Highest_Resolution",
-               "audio": "Audio", "langs": "Languages", "mode": "Appearence Mode", "light": "Light", "dark": "Dark",
-               "colors": "Colors", "btn_colors": "Button Colors"
+               "audio": "Audio", "langs": "Languages"
                }
 
     turkish = {"app_title": "Pytube Video İndirme" ,"title": "Youtube linkini giriniz", 
@@ -32,16 +29,8 @@ class Ejderyatube:
                "author": """TarıkBurhan tarafından Pytube Video İndirici.\n İndirme yaparken uygulamada donmalar olabilir.""",
                "res_sel": "Çözünürlük Seçme", "resltns": "Çözünürlükler", "sttngs": "Ayarlar",
                "sel_ur_res": "Çözünürlüğünüzü Seçiniz", "select": "Seç", "hghst_res": "En_Yuksek_Cozunurluk",
-               "audio": "Ses", "langs": "Diller", "mode": "Görünüş Modu", "light": "Açık", "dark": "Koyu",
-               "colors": "Renkler", "btn_colors": "Buton Renkleri"
+               "audio": "Ses", "langs": "Diller"
                }
-
-    ######
-    ##
-    #       BUTON RENK İSİMLERİ TÜRKÇEDE DE İNGİLİZCE!!!!!!
-    ##
-    ######
-    button_colors = ["Blue", "Green", "Red", "Orange", "Magenta"]
 
     def __init__(self):
         self.icon = """
@@ -170,7 +159,8 @@ class Ejderyatube:
             q7wVaKjw1hwaLp+bt8oRk/EeMUM/tc8sR0ybaHiwwZg+7gcje6NKTyJJbgAAAABJRU5ErkJggg==">"""
 
         self.download_path = ".\YoutubeVideos"
-        self.lang_dict = self.turkish if language=="tr" else self.english
+
+        self.lang_dict = self.english
         
         self.app = customtkinter.CTk()
         self.app_height = 350
@@ -181,8 +171,8 @@ class Ejderyatube:
         self.screen_width = self.app.winfo_screenwidth()
         self.x = self.screen_width / 2 - self.app_width / 2
         self.y = self.screen_height / 2 - self.app_height / 2
-        self.app.geometry(f"{self.app_width}x{self.app_height}+{int(self.x)}+{int(self.y)}")
         self.app.resizable(0,0)
+        self.app.geometry(f"{self.app_width}x{self.app_height}+{int(self.x)}+{int(self.y)}")
 
         self.img = tkinter.PhotoImage(data=self.icon)
         self.app.iconphoto(False, self.img)
@@ -194,7 +184,7 @@ class Ejderyatube:
         
         self.app.title(self.lang_dict["app_title"])
 
-        self.title = customtkinter.CTkLabel(self.app, text=self.lang_dict["title"], font=("Helvetica", 12, "bold"))
+        self.title = customtkinter.CTkLabel(self.app, text=self.lang_dict["title"])
         self.title.pack(padx=10, pady=5)
 
         self.url = tkinter.StringVar()
@@ -202,7 +192,7 @@ class Ejderyatube:
         self.link_section.pack()
 
         # Error/Downloaded Label
-        self.finish_label = customtkinter.CTkLabel(self.app, text="", font=("Helvetica", 18, "bold"))
+        self.finish_label = customtkinter.CTkLabel(self.app, text="")
         self.finish_label.pack(padx=10, pady=10)
 
         # Download Buttons
@@ -349,128 +339,42 @@ class Ejderyatube:
         thread.daemon = True
         thread.start()
 
+    def lang_tr(self):
+        self.lang_dict = self.turkish
+        self.new_window.destroy()
+        
+    def lang_en(self):
+        self.lang_dict = self.english
+
     def settings(self):
-        self.settings_window = customtkinter.CTkToplevel()
-        self.settings_window.title(self.lang_dict["sttngs"])
-        nw_screen_width = self.settings_window.winfo_screenwidth()
-        nw_screen_height = self.settings_window.winfo_screenheight()
-        nw_app_width = 250
-        nw_app_height = 100
-        self.settings_window.minsize(nw_app_width, nw_app_height)
-        self.settings_window.maxsize(nw_app_width, nw_app_height)
-        nw_x = nw_screen_width / 2 - nw_app_width / 2
-        nw_y = nw_screen_height / 2 - nw_app_height / 2
-        self.settings_window.geometry(f"{nw_app_width}x{nw_app_height}+{int(nw_x)}+{int(nw_y)}")
-
-        language_label = customtkinter.CTkLabel(self.settings_window, 40, 10, text=self.lang_dict["mode"])
-        language_label.place(relx=0.03, rely=0.1)
-
-        self.change_apprn_button = customtkinter.CTkButton(self.settings_window, 30, 20, text="", command=self.change_appearence)
-        self.change_apprn_button.place(relx=0.45, rely = 0.08)
-
-        color_label = customtkinter.CTkLabel(self.settings_window, 40, 10, text=self.lang_dict["btn_colors"])
-        color_label.place(relx=0.03, rely=0.4)
-        value = customtkinter.StringVar(self.settings_window)
-        value.set(self.lang_dict["colors"])
-        self.color_chng_button = customtkinter.CTkOptionMenu(self.settings_window, 30, 20,
-                                                                variable=value, values=self.button_colors, command=self.change_color)
-        self.color_chng_button.place(relx=0.45, rely = 0.4)
-
-    def change_appearence(self):
-        if customtkinter.get_appearance_mode() == "Dark":
-            customtkinter.set_appearance_mode("Light")
-        else:
-            customtkinter.set_appearance_mode("Dark")
-
-    def change_color(self, val):
-        self.download_button.configure(fg_color=val)
-        self.path_select_button.configure(fg_color=val)
-        self.download_audio_button.configure(fg_color=val)
-        self.download_by_res_button.configure(fg_color=val)
-        self.settings_button.configure(fg_color=val)
-        self.change_apprn_button.configure(fg_color=val)
-        self.color_chng_button.configure(fg_color=val)
-        
-    def select_path(self):
-        path = customtkinter.filedialog.askdirectory()
-        self.download_path = path
-
-
-class LanguageSelection:
-    def __init__(self):
-        self.icon = """
-            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
-            """
-        
-        self.new_window = customtkinter.CTk()
-        self.new_window.title("Start")
+        self.new_window = customtkinter.CTkToplevel()
+        self.new_window.title(self.lang_dict["sttngs"])
         nw_screen_width = self.new_window.winfo_screenwidth()
         nw_screen_height = self.new_window.winfo_screenheight()
-        nw_app_width = 200
-        nw_app_height = 50
+        nw_app_width = 250
+        nw_app_height = 100
         self.new_window.minsize(nw_app_width, nw_app_height)
         self.new_window.maxsize(nw_app_width, nw_app_height)
         nw_x = nw_screen_width / 2 - nw_app_width / 2
         nw_y = nw_screen_height / 2 - nw_app_height / 2
         self.new_window.geometry(f"{nw_app_width}x{nw_app_height}+{int(nw_x)}+{int(nw_y)}")
-        self.new_window.resizable(0,0)
 
-        self.img = tkinter.PhotoImage(data=self.icon)
-        self.new_window.iconphoto(False, self.img)
-        language_label = customtkinter.CTkLabel(self.new_window, 40, 10, text="Diller/Languages")
-        language_label.pack(padx=10, pady=5)
+        language_label = customtkinter.CTkLabel(self.new_window, 40, 10, text=self.lang_dict["langs"])
+        language_label.place(relx=0.03, rely=0.1)
 
-        tr_button = customtkinter.CTkButton(self.new_window, 30, 10, text="Türkçe", command=self.lang_tr)
-        tr_button.place(relx=0.2, rely = 0.4)
+        tr_button = customtkinter.CTkButton(self.new_window, 30, 10, text="TR", command=self.lang_tr)
+        tr_button.place(relx=0.3, rely = 0.1)
 
-        en_button = customtkinter.CTkButton(self.new_window, 30, 10, text="English", command=self.lang_en)
-        en_button.place(relx=0.5, rely = 0.4)
-
-        self.new_window.mainloop()
-
-    def lang_tr(self):
-        global language
-        language = "tr"
-        self.run_ejderyatube()
-    
-    def lang_en(self):
-        global language
-        language = "en"
-        self.run_ejderyatube()
-
-    def run_ejderyatube(self):
-        self.new_window.destroy()
-        window = Ejderyatube()
+        en_button = customtkinter.CTkButton(self.new_window, 30, 10, text="EN", command=self.lang_en)
+        en_button.place(relx=0.45, rely = 0.1)
 
 
-application = LanguageSelection()
+    def select_path(self):
+        path = customtkinter.filedialog.askdirectory()
+        self.download_path = path
+
+
+window = Ejderyatube()
+
+
+# Dil değiştirme olmadı???
