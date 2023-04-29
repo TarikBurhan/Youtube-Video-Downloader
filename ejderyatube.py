@@ -311,11 +311,14 @@ class Ejderyatube:
         self.button_disable()
         try:
             ytLink = self.link_section.get()
+            print("qew")
             ytObj = YouTube(ytLink)
+            print(ytObj.streams)
             video = ytObj.streams.get_audio_only()
+            print("xd")
             self.title.configure(text=ytObj.title, text_color="white")
             download_title = ytObj.title.translate(str.maketrans('', '', string.punctuation))
-            video.download(filename=f'{download_title}_{self.lang_dict["audio"]}.mp4', output_path=self.download_path)
+            video.download(filename=f'{download_title}_{self.lang_dict["audio"]}.mp3', output_path=self.download_path)
             self.finish_label.configure(text=self.lang_dict["lbl_downldd"], text_color="green")
 
         except:
